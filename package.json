@@ -1,5 +1,5 @@
 {
-  "name": "polydns",
+  "name": "polydns-project",
   "private": true,
   "scripts": {
     "build": "turbo build",
