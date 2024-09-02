@@ -4,8 +4,8 @@ import {
   recordsUnionDefaultSchema,
   RecordsUnionSchemaBase,
   RecordsUnionSchemaOptionsValue,
-  SupportedRecordTypes,
 } from "./default-records-schema.js";
+import { SupportedRecordTypes } from "./supported-record-types-schema.js";
 
 export function extendDefaultRecordsUnionSchema<A extends RecordsAdditions>(
   additions?: A

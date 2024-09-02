@@ -32,9 +32,6 @@ export type RecordsUnionSchemaBaseSkeleton = z.ZodDiscriminatedUnion<
 
 export type RecordsUnionSchemaBase = typeof recordsUnionDefaultSchema;
 
-export type SupportedRecordTypes =
-  RecordsUnionSchemaBase["options"][number]["shape"]["type"]["value"];
-
 export type RecordsUnionSchemaBaseOptionsValue =
   RecordsUnionSchemaBaseSkeleton["options"][number];
 
