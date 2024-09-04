@@ -1,11 +1,13 @@
 import { z } from "zod";
-import { Prettify } from "../utils/prettify.js";
 import {
   recordsUnionDefaultSchema,
   RecordsUnionSchemaBase,
   RecordsUnionSchemaOptionsValue,
 } from "./default-records-schema.js";
-import { SupportedRecordTypes } from "./supported-record-types-schema.js";
+import {
+  SupportedRecordTypes,
+  supportedRecordTypesUnionSchema,
+} from "./supported-record-types-schema.js";
 
 export function extendDefaultRecordsUnionSchema<A extends RecordsAdditions>(
   additions?: A
@@ -21,9 +23,12 @@ export function extendDefaultRecordsUnionSchema<A extends RecordsAdditions>(
   ) as RecordsUnionSchemaExtended<A>;
 }
 
-export type RecordsAdditions = Prettify<
-  Partial<Record<"global" | SupportedRecordTypes, z.ZodRawShape>>
->;
+export const recordAdditionsSchema = z.record(
+  z.union([z.literal("global"), ...supportedRecordTypesUnionSchema.options]),
+  z.record(z.string(), z.instanceof(z.ZodType))
+);
+
+export type RecordsAdditions = z.infer<typeof recordAdditionsSchema>;
 
 type UnionDiscriminator = typeof recordsUnionDefaultSchema.discriminator;
 type UnionOptionsSkeleton = [
