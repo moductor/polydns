@@ -43,7 +43,7 @@ export function createProvider<
   TRecordsAdditions extends RecordsAdditions = {},
   TCallerConfigSchema extends z.AnyZodObject | undefined = undefined,
 >(provider: {
-  schemas: {
+  schemas?: {
     recordsAdditions?: TRecordsAdditions;
     callerConfig?: TCallerConfigSchema;
   };
