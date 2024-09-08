@@ -7,7 +7,7 @@ import {
 import { RecordGeneral } from "./schemas/record-schema.js";
 import { PromiseOr } from "./utils/promise-or.js";
 
-type ProviderCallerMethodResult<TData = undefined> =
+export type ProviderCallerMethodResult<TData = undefined> =
   | (TData extends undefined | null | never
       ? {
           success: true;
@@ -28,7 +28,10 @@ export type ProviderCaller<
     RecordsUnionSchemaBaseSkeleton = RecordsUnionSchemaExtended<TRecordsAdditions>,
   TRecord = RecordGeneral<TRecordsUnionSchema>,
 > = {
-  listRecords: () => PromiseOr<
+  listDomains: () => PromiseOr<ProviderCallerMethodResult<string[]>>;
+  listRecords: (
+    domain: string
+  ) => PromiseOr<
     ProviderCallerMethodResult<(TRecord & z.infer<TRecordIdAdditionSchema>)[]>
   >;
   createRecord: (record: TRecord) => PromiseOr<ProviderCallerMethodResult>;
@@ -47,11 +50,17 @@ export function createProvider<
     recordsAdditions?: TRecordsAdditions;
     callerConfig?: TCallerConfigSchema;
   };
-  createCaller: TCallerConfigSchema extends undefined
-    ? () => ProviderCaller<TRecordsAdditions, TRecordIdAdditionSchema>
-    : (
-        config: z.infer<NonNullable<TCallerConfigSchema>>
-      ) => ProviderCaller<TRecordsAdditions, TRecordIdAdditionSchema>;
+  createCaller: (
+    data: {
+      recordSchema: RecordsUnionSchemaExtended<TRecordsAdditions>;
+      recordSchemaInternal: z.ZodIntersection<
+        RecordsUnionSchemaExtended<TRecordsAdditions>,
+        TRecordIdAdditionSchema
+      >;
+    } & (TCallerConfigSchema extends z.AnyZodObject
+      ? { config: z.infer<TCallerConfigSchema> }
+      : {})
+  ) => ProviderCaller<TRecordsAdditions, TRecordIdAdditionSchema>;
 }) {
   return provider;
 }
