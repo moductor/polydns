@@ -8,7 +8,7 @@ function dnsRecord<
   },
 >(type: Type, props: Props) {
   return z.object({
-    name: z.string().regex(/^([a-zA-Z0-9]+\.)+([a-zA-Z0-9]+)$/),
+    name: z.string().regex(/^(\*\.)?([a-zA-Z0-9]+\.)+([a-zA-Z0-9]+)$/),
     type: z.literal(type),
     ...props,
   });
