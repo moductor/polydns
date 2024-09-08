@@ -66,7 +66,24 @@ importers:
         specifier: ^22.5.1
         version: 22.5.1
 
-  packages/providers/porkbun: {}
+  packages/providers/porkbun:
+    dependencies:
+      polydns:
+        specifier: workspace:*
+        version: link:../../polydns
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../configs/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../configs/typescript-config
+      '@types/node':
+        specifier: ^22.5.1
+        version: 22.5.1
 
 packages:
 
