@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+export const recordNameSchema = z
+  .string()
+  .regex(/^(\*\.)?([a-zA-Z0-9]+\.)+([a-zA-Z0-9]+)$/);
+
 function dnsRecord<
   Type extends string,
   Props extends {
@@ -8,7 +12,7 @@ function dnsRecord<
   },
 >(type: Type, props: Props) {
   return z.object({
-    name: z.string().regex(/^(\*\.)?([a-zA-Z0-9]+\.)+([a-zA-Z0-9]+)$/),
+    name: recordNameSchema,
     type: z.literal(type),
     ...props,
   });
@@ -22,6 +26,9 @@ export const recordsUnionDefaultSchema = z.discriminatedUnion("type", [
     value: z.string().ip({ version: "v6" }),
   }),
   dnsRecord("CNAME", {
+    value: z.string().regex(/^([a-zA-Z0-9]+\.)+$/),
+  }),
+  dnsRecord("ALIAS", {
     value: z.string().regex(/^([a-zA-Z0-9]+\.)+$/),
   }),
   dnsRecord("MX", {
