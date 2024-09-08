@@ -1,11 +1,12 @@
 import { isDeepStrictEqual } from "util";
 import { z } from "zod";
-import { Provider, ProviderCaller } from "./create-provider.js";
+import { Provider } from "./create-provider.js";
 import {
   extendDefaultRecordsUnionSchema,
   RecordsAdditions,
 } from "./schemas/extend-records-schema.js";
 import { ArrayDiff, diffArrays } from "./utils/compare-arrays.js";
+import { getDomainFromRecordName } from "./utils/domain-name.js";
 import { omit } from "./utils/omit.js";
 
 type PolyDNSConfig<
@@ -40,32 +41,17 @@ export function createPolyDNS<
     TRecordIdAdditionSchema
   >
 ) {
-  // create caller from input
-
   const provider = input.provider;
-
-  function getCaller() {
-    const config = !provider.schemas?.callerConfig
-      ? undefined
-      : (
-          input as {
-            config: z.infer<NonNullable<TCallerConfigSchema>>;
-          }
-        ).config;
-
-    return (
-      config
-        ? provider.createCaller(provider.schemas!.callerConfig!.parse(config))
-        : (provider as any).createCaller()
-    ) as ProviderCaller<TRecordsAdditions>;
-  }
-
-  const caller = getCaller();
 
   // create schemas and types
 
   const recordSchema = extendDefaultRecordsUnionSchema(
     provider?.schemas?.recordsAdditions
+  );
+
+  const recordSchemaInternal = recordSchema.and(
+    (provider.schemas?.recordIdAddition ??
+      z.object({})) as TRecordIdAdditionSchema
   );
 
   type Record = z.infer<typeof recordSchema>;
@@ -74,12 +60,26 @@ export function createPolyDNS<
     ? Object.keys(provider.schemas.recordIdAddition.shape)
     : [];
 
+  // create caller from input
+
+  const caller = provider.createCaller({
+    recordSchema,
+    recordSchemaInternal,
+    config: provider.schemas?.callerConfig ? (input as any).config : undefined,
+  });
+
   // create functions
 
-  async function listRecordsFull() {
-    const result = await caller.listRecords();
+  async function listDomains() {
+    const result = await caller.listDomains();
     if (!result.success) throw new Error();
-    return result.data;
+    return z.array(z.string()).parse(result.data);
+  }
+
+  async function listRecordsFull(domain: string) {
+    const result = await caller.listRecords(domain);
+    if (!result.success) throw new Error();
+    return z.array(recordSchemaInternal).parse(result.data);
   }
 
   function extendRecordWithId(
@@ -90,8 +90,8 @@ export function createPolyDNS<
     return records.find((r) => isDeepStrictEqual(record, omit(r, ...idKeys)));
   }
 
-  async function listRecords() {
-    return z.array(recordSchema).parse(await listRecordsFull());
+  async function listRecords(domain: string) {
+    return z.array(recordSchema).parse(await listRecordsFull(domain));
   }
 
   async function createRecord(record: Record) {
@@ -111,24 +111,33 @@ export function createPolyDNS<
   }
 
   async function deleteRecord(record: Record) {
-    return await deleteRecordWithList(record, await listRecordsFull());
+    const domain = getDomainFromRecordName(record.name!);
+    return await deleteRecordWithList(record, await listRecordsFull(domain));
   }
 
-  async function getRecordsChanges(newRecordsSet: Record[]) {
+  async function getRecordsChanges(
+    domain: string,
+    newRecordsSet: Record[],
+    currentRecords?: Record[]
+  ) {
     const newRecords = z.array(recordSchema).parse(newRecordsSet);
-    const currentRecords = await listRecordsFull();
+    const records = currentRecords ?? (await listRecordsFull(domain));
 
     return diffArrays<Record>(
-      currentRecords.map((r) => omit(r, ...idKeys) as any as Record),
+      records.map((r) => omit(r, ...idKeys) as any as Record),
       newRecords
     );
   }
 
-  async function performRecordsChanges(changes: ArrayDiff<Record>) {
-    const currentRecords = await listRecordsFull();
+  async function performRecordsChanges(
+    domain: string,
+    changes: ArrayDiff<Record>,
+    currentRecords?: Record[]
+  ) {
+    const records = currentRecords ?? (await listRecordsFull(domain));
 
     for (const record of changes.removed) {
-      await deleteRecordWithList(record, currentRecords);
+      await deleteRecordWithList(record, records);
     }
 
     for (const record of changes.added) {
@@ -136,12 +145,20 @@ export function createPolyDNS<
     }
   }
 
-  async function setRecords(newRecordsSet: Record[]) {
-    return await performRecordsChanges(await getRecordsChanges(newRecordsSet));
+  async function setRecords(domain: string, newRecordsSet: Record[]) {
+    const records = await listRecordsFull(domain);
+
+    return await performRecordsChanges(
+      domain,
+      await getRecordsChanges(domain, newRecordsSet, records),
+      records
+    );
   }
 
   return {
+    getDomainFromRecordName,
     parseRecord: recordSchema.parse,
+    listDomains,
     listRecords,
     createRecord,
     deleteRecord,
