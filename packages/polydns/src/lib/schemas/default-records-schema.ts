@@ -1,20 +1,30 @@
 import { z } from "zod";
 
+function dnsRecord<
+  Type extends string,
+  Props extends {
+    value: z.ZodString;
+    [prop: string]: z.ZodType;
+  },
+>(type: Type, props: Props) {
+  return z.object({
+    name: z.string().regex(/^([a-zA-Z0-9]+\.)+([a-zA-Z0-9]+)$/),
+    type: z.literal(type),
+    ...props,
+  });
+}
+
 export const recordsUnionDefaultSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("A"),
+  dnsRecord("A", {
     value: z.string().ip({ version: "v4" }),
   }),
-  z.object({
-    type: z.literal("AAAA"),
+  dnsRecord("AAAA", {
     value: z.string().ip({ version: "v6" }),
   }),
-  z.object({
-    type: z.literal("CNAME"),
+  dnsRecord("CNAME", {
     value: z.string().regex(/^([a-zA-Z0-9]+\.)+$/),
   }),
-  z.object({
-    type: z.literal("MX"),
+  dnsRecord("MX", {
     value: z.string().regex(/^([a-zA-Z0-9]+\.)+$/),
     priority: z.number().optional(),
   }),
@@ -24,6 +34,7 @@ export type RecordsUnionSchemaBaseSkeleton = z.ZodDiscriminatedUnion<
   string,
   z.ZodObject<
     {
+      name: z.ZodString;
       type: z.ZodLiteral<Uppercase<string>>;
       value: z.ZodString;
     } & z.ZodRawShape

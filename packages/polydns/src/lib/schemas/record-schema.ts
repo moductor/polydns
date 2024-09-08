@@ -1,10 +1,11 @@
+import { z } from "zod";
 import {
   recordsUnionDefaultSchema,
   RecordsUnionSchemaBase,
   RecordsUnionSchemaBaseSkeleton,
   RecordsUnionSchemaOptionsValue,
-  SupportedRecordTypes,
 } from "./default-records-schema.js";
+import { SupportedRecordTypes } from "./supported-record-types-schema.js";
 
 export function getRecordSchema<
   T extends SupportedRecordTypes,
@@ -22,3 +23,12 @@ export type RecordSchema<
   RecordsUnionSchemaOptionsValue<U>,
   { shape: { type: { value: T } } }
 >;
+
+export type RecordGeneral<
+  U extends RecordsUnionSchemaBaseSkeleton = RecordsUnionSchemaBase,
+> = z.infer<U>;
+
+export type Record<
+  T extends SupportedRecordTypes,
+  U extends RecordsUnionSchemaBaseSkeleton = RecordsUnionSchemaBase,
+> = Extract<RecordGeneral<U>, { type: T }>;
