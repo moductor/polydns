@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      zod:
-        specifier: ^3.23.8
-        version: 3.23.8
     devDependencies:
       eslint:
         specifier: ^8.57.0
@@ -55,6 +51,10 @@ importers:
   packages/configs/typescript-config: {}
 
   packages/polydns:
+    dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
