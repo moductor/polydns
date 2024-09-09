@@ -1,5 +1,5 @@
 {
-  "name": "@polydns/porkbun",
+  "name": "@polydns/provider-porkbun",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "@types/node": "^22.5.1"
   },
   "dependencies": {
-    "polydns": "workspace:*",
+    "@polydns/core": "workspace:*",
     "zod": "^3.23.8"
   }
 }

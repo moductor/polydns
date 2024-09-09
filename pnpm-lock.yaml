@@ -50,7 +50,7 @@ importers:
 
   packages/configs/typescript-config: {}
 
-  packages/polydns:
+  packages/core:
     dependencies:
       zod:
         specifier: ^3.23.8
@@ -68,9 +68,9 @@ importers:
 
   packages/providers/porkbun:
     dependencies:
-      polydns:
+      '@polydns/core':
         specifier: workspace:*
-        version: link:../../polydns
+        version: link:../../core
       zod:
         specifier: ^3.23.8
         version: 3.23.8

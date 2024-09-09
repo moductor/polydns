@@ -3,7 +3,7 @@ import {
   getDomainFromRecordName,
   ProviderCallerMethodResult,
   removeDomainFromName,
-} from "polydns";
+} from "@polydns/core";
 import { z } from "zod";
 import {
   Auth,

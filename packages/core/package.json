@@ -1,5 +1,5 @@
 {
-  "name": "polydns",
+  "name": "@polydns/core",
   "description": "",
   "keywords": [],
   "author": "",
@@ -7,9 +7,8 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "bin": "dist/cli.js",
   "scripts": {
-    "build": "tsup --format=esm src/index.ts src/cli.ts --dts=src/index.ts",
+    "build": "tsup --format=esm src/index.ts --dts=src/index.ts",
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
