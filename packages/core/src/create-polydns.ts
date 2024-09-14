@@ -157,6 +157,7 @@ export function createPolyDNS<
 
   return {
     getDomainFromRecordName,
+    recordSchema,
     parseRecord: recordSchema.parse,
     listDomains,
     listRecords,
