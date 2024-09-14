@@ -1,0 +1,30 @@
+{
+  "name": "@polydns/cli",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "polydns": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup --format=esm src/index.ts",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.5.1"
+  },
+  "dependencies": {
+    "@clerc/plugin-help": "^0.44.0",
+    "@polydns/core": "workspace:*",
+    "chalk": "^5.3.0",
+    "clerc": "^0.44.0",
+    "dotenv": "^16.4.5",
+    "glob": "^11.0.0",
+    "yaml": "^2.5.1",
+    "zod": "^3.23.8",
+    "zod-validation-error": "^3.3.1"
+  }
+}
