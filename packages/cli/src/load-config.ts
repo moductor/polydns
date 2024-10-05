@@ -72,7 +72,7 @@ function safeParseYaml(file: string) {
     return out.error(
       "Error validating the config file:",
       errorData.toString(),
-      1
+      1,
     );
   }
 
@@ -88,7 +88,7 @@ function checkProviders(config: ConfigRaw) {
       ? unusedProviders.includes(d.provider)
         ? unusedProviders.splice(unusedProviders.indexOf(d.provider), 1)
         : null
-      : incorrectProviders.push(d.provider)
+      : incorrectProviders.push(d.provider),
   );
 
   if (incorrectProviders.length) {
@@ -129,7 +129,7 @@ function safeParseRecordSubFile(path: string) {
     return out.error(
       "Error validating the record config subfile:",
       errorData.toString(),
-      1
+      1,
     );
   }
 
@@ -152,9 +152,9 @@ function resolveRecordSubfiles(config: ConfigRaw) {
                 ...record,
                 name,
               }));
-            }
+            },
           );
-        }
+        },
       ),
     })),
   });
@@ -169,7 +169,7 @@ function resolveRecordSubfiles(config: ConfigRaw) {
     return out.error(
       "Error validating the config file with record subfiles:",
       errorData.toString(),
-      1
+      1,
     );
   }
 
