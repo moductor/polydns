@@ -22,7 +22,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       className={clsx(kanit.variable, inter.variable)}
       suppressHydrationWarning
     >
-      <body>
+      <body className="flex min-h-screen flex-col">
         <RootProvider>{children}</RootProvider>
       </body>
     </html>
