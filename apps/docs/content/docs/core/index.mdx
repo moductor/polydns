@@ -1,17 +1,127 @@
 ---
-title: Hello World
-description: Your first document
+title: Get Started
+description: Getting started with PolyDNS
 ---
 
-## Code Block
+## Introduction
 
-```js
-console.log("Hello World");
+**PolyDNS** is a modern typesafe tool for managing DNS records from JavaScript code. It is not tied to one specific DNS provider, it can be used with any provider that has a public API. There are a number of official providers and you can even simply write your own if the one you're looking for doesn't exist yet.
+
+## Installation
+
+The library can be installed into an existing project from the NPM registry:
+
+<Tabs groupId="package-manager" persist items={["npm", "pnpm", "bun", "yarn"]}>
+
+```bash tab="npm"
+npm install @polydns/core
 ```
 
-## Cards
+```bash tab="pnpm"
+pnpm add @polydns/core
+```
 
-<Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.vercel.app" />
-</Cards>
+```bash tab="bun"
+bun add @polydns/core
+```
+
+```bash tab="yarn"
+yarn add @polydns/core
+```
+
+</Tabs>
+
+### Provider installation
+
+PolyDNS requires having a DNS provider library installed to work with the API. For example, if you would like to use the Porkbun provider, you can install it using the command bellow:
+
+<Tabs groupId="package-manager" persist items={["npm", "pnpm", "bun", "yarn"]}>
+
+```bash tab="npm"
+npm install @polydns/provider-porkbun
+```
+
+```bash tab="pnpm"
+pnpm add @polydns/provider-porkbun
+```
+
+```bash tab="bun"
+bun add @polydns/provider-porkbun
+```
+
+```bash tab="yarn"
+yarn add @polydns/provider-porkbun
+```
+
+</Tabs>
+
+## Initialization
+
+To initialize PolyDNS, run the `createPolyDNS()` function. As a parameter it takes an object with a `provider` key and the specific provider as a value. Some providers will also require you to add a `config` key with initialization properties used by the provider (see the provider documentation for specific information).
+
+The `createPolyDNS()` functions takes always _only one_ provider as the parameter. If you need to initialize PolyDNS with multiple providers, create one separate instance for each provider.
+
+```ts title="index.ts"
+import { createPolyDNS } from "@polydns/core";
+import PorkbunProvider from "@polydns/provider-porkbun";
+
+const dns = createPolyDNS({
+  provider: PorkbunProvider,
+  config: {
+    publicKey: process.env.PORKBUN_PK!,
+    secretKey: process.env.PORKBUN_SK!,
+  },
+});
+```
+
+## Managing records
+
+After successful initialization of the library you can simply manage the DNS records as shown bellow.
+
+```ts title="index.ts"
+// prints a list of domains the provider can manage
+console.log(await dns.listDomains());
+
+// prints a list of records tied to the domain
+console.log(await dns.listRecords("domain.tld"));
+
+// creates a record
+await dns.createRecord({
+  name: "www.domain.tld",
+  type: "CNAME",
+  value: "domain.tld.",
+});
+
+// deletes the record
+await dns.deleteRecord({
+  name: "www.domain.tld",
+  type: "CNAME",
+  value: "domain.tld.",
+});
+
+// removes all records and adds the ones from the array
+await dns.setRecords("domain.tld", [
+  {
+    name: "www.domain.tld",
+    type: "CNAME",
+    value: "domain.tld.",
+  },
+  {
+    name: "sub.domain.tld",
+    type: "CNAME",
+    value: "www.domain.tld.",
+  },
+]);
+```
+
+## CLI
+
+You don't have to use the library from code, PolyDNS has it's own CLI! The CLI makes it easier to manage the records from structured config files without the need of writing code. The config files are validated, loaded and performed by the CLI.
+
+This can be really useful for managing the records from a Git repository and deploying them with CI.
+
+## What about DNSControl?
+
+DNSControl is a great tool that PolyDNS took a huge inspiration from. Nevertheless, DNSControl is quite limiting. It's not a library, but a JS runtime on its own, that doesn't support most of the modern JS features. It's not typesafe, everything you have is a bunch of globals you have to use to define your DNS structure.
+
+PolyDNS was built to allow you to manage the DNS records from modern JavaScript and even TypeScript and to use any JS runtime you want. On top of that, the CLI provides you a simple way to manage the records from config files. This was doable with DNSControl, but you had to write the logic on your own in the limiting environment.
