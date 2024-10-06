@@ -1,4 +1,3 @@
-import { source } from "@/app/source";
 import { cn } from "@/utils/cn";
 import { type LucideIcon } from "lucide-react";
 
@@ -9,8 +8,6 @@ export default function RootToggleIcon({
   icon: LucideIcon;
   className?: string;
 }) {
-  console.log(JSON.stringify(source.pageTree, undefined, 2));
-
   return (
     <div
       className={cn(

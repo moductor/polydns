@@ -6,6 +6,7 @@ export default function NavbarToggle() {
     <div className="border-fd-foreground/5 bg-fd-foreground/5 flex gap-1 rounded-lg border-2 p-1 text-sm leading-none">
       {rootTogglePages.map((page, i) => (
         <Link
+          key={i}
           href={page.url}
           className="hover:bg-fd-foreground/10 rounded-md px-1.5 py-1 opacity-60 transition-all hover:opacity-80"
         >
