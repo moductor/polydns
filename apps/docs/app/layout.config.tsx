@@ -3,7 +3,13 @@ import RootToggleIcon from "@/components/root-toggle-icon";
 import { RootToggle } from "fumadocs-ui/components/layout/root-toggle";
 import { type HomeLayoutProps } from "fumadocs-ui/home-layout";
 import { type DocsLayoutProps } from "fumadocs-ui/layout";
-import { Blocks, Book, Library, type LucideIcon, Terminal } from "lucide-react";
+import {
+  Blocks,
+  Book,
+  Library,
+  type LucideIcon,
+  SquareTerminal,
+} from "lucide-react";
 import { source } from "./source";
 
 type RootToggleOption = Parameters<typeof RootToggle>[0]["options"][number];
@@ -18,21 +24,21 @@ export const rootTogglePages: RootTogglePage[] = [
     description: "Core library",
     url: "/docs/core",
     icon: Library,
-    className: "bg-amber-500/50",
+    className: "bg-amber-600/50 dark:bg-amber-500/50",
   },
   {
     title: "CLI",
     description: "Command line program",
     url: "/docs/cli",
-    icon: Terminal,
-    className: "bg-sky-500/50",
+    icon: SquareTerminal,
+    className: "bg-sky-600/50 dark:bg-sky-500/50",
   },
   {
     title: "Providers",
     description: "Supported DNS providers",
     url: "/docs/providers",
     icon: Blocks,
-    className: "bg-purple-500/50",
+    className: "bg-purple-600/50 dark:bg-purple-500/50",
   },
 ];
 
